@@ -52,6 +52,21 @@ public:
     bool is_done() { return done_status; }
 };
 
+namespace metrics_details {
+    template<typename T>
+    struct is_metrics_derived {
+        template<typename U>
+        static std::true_type test(const metrics<U> *);
+
+        static std::false_type test(...);
+
+        static constexpr bool value = decltype(test(std::declval<T *>()))::value;
+    };
+}
+
+template<typename T>
+inline constexpr bool is_metrics_derived_v = metrics_details::is_metrics_derived<T>::value;
+
 // counts the number of additions of 1 in 10 ms
 class OP10ms_metric : public metrics<std::size_t> {
     size_t operation_count = 0;

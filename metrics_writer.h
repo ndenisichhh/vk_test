@@ -15,7 +15,7 @@
 
 #include "metrics.h"
 
-template<typename... T> requires all_unique_v<T...>
+template<typename... T> requires all_unique_v<T...> && (is_metrics_derived_v<T> && ...)
 class metrics_writer {
     std::tuple<T...> metrics_storage;
     std::vector<std::jthread> threads;
