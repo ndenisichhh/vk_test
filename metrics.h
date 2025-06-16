@@ -89,14 +89,17 @@ public:
     }
 };
 
-// generates a random number from 1 to 100 and divides by 79
+// generates a random number from low to high
 class RND_metric : public metrics<double> {
     std::mt19937 gen;
+    int low = 1, high = 100;
 public:
     RND_metric() : metrics("RND"), gen(std::random_device{}()) {}
 
+    RND_metric(int low, int high) : metrics("RND with borders"), low(low), high(high) {}
+
     void collect_metric_helper() override {
-        std::uniform_int_distribution<int> dist(1, 100);
-        set_value(1.0 / 79 * dist(gen));
+        std::uniform_int_distribution<int> dist(low, high);
+        set_value(dist(gen));
     }
 };

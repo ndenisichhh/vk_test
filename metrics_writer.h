@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <random>
 #include <ctime>
@@ -78,14 +79,17 @@ public:
 
     metrics_writer &operator=(metrics_writer &&) = default;
 
-    explicit metrics_writer(const std::string& file): log_file(file, std::ios::app) {}
+    explicit metrics_writer(const std::string &file) : log_file(file, std::ios::app) {}
 
     ~metrics_writer() {
         stop_collecting();
     }
 
-    void set_file(const std::string& file) {
-        std::lock_guard lock(printing_mutex);
+    void register_metrics(T &&... metrics) {
+        metrics_storage = std::make_tuple(std::forward<T>(metrics)...);
+    }
+
+    void set_file(const std::string &file) {
         log_file.open(file, std::ios::app);
     }
 
@@ -102,7 +106,6 @@ public:
 
     void stop_collecting() noexcept {
         is_running = false;
-        std::lock_guard lock(printing_mutex);
         threads.clear();
         if (log_file.is_open()) log_file.close();
     }
